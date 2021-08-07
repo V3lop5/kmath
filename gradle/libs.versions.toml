@@ -1,0 +1,31 @@
+[versions]
+better-parse = "0.4.2"
+commons-math3 = "3.6.1"
+ejml = "0.41"
+jafama = "2.3.2"
+matheclipse = "2.0.0-SNAPSHOT"
+nd4j = "1.0.0-M1.1"
+plotlykt = "0.4.4"
+slf4j = "1.7.32"
+
+[libraries]
+better-parse = { module = "com.github.h0tk3y.betterParse:better-parse", version.ref = "better-parse" }
+
+commons-math3 = { module = "org.apache.commons:commons-math3", version.ref = "commons-math3" }
+
+ejml-ddense = { module = "org.ejml:ejml-ddense", version.ref = "ejml" }
+ejml-fdense = { module = "org.ejml:ejml-fdense", version.ref = "ejml" }
+ejml-dsparse = { module = "org.ejml:ejml-dsparse", version.ref = "ejml" }
+ejml-fsparse = { module = "org.ejml:ejml-fsparse", version.ref = "ejml" }
+
+jafama = { module = "net.jafama:jafama", version.ref = "jafama" }
+
+matheclipse-core = { module = "org.matheclipse:matheclipse-core", version.ref = "matheclipse" }
+
+nd4j-api = { module = "org.nd4j:nd4j-api", version.ref = "nd4j" }
+nd4j-native = { module = "org.nd4j:nd4j-native", version.ref = "nd4j" }
+nd4j-native-platform = { module = "org.nd4j:nd4j-native-platform", version.ref = "nd4j" }
+
+plotlykt-server = { module = "space.kscience:plotlykt-server", version.ref = "plotlykt" }
+
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }

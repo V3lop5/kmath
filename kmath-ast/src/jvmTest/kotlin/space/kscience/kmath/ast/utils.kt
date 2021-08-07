@@ -15,7 +15,7 @@ import kotlin.contracts.contract
 import space.kscience.kmath.asm.compile as asmCompile
 import space.kscience.kmath.asm.compileToExpression as asmCompileToExpression
 
-private object AsmCompilerTestContext : CompilerTestContext {
+internal object AsmCompilerTestContext : CompilerTestContext {
     override fun MST.compileToExpression(algebra: IntRing): Expression<Int> = asmCompileToExpression(algebra)
     override fun MST.compile(algebra: IntRing, arguments: Map<Symbol, Int>): Int = asmCompile(algebra, arguments)
     override fun MST.compileToExpression(algebra: DoubleField): Expression<Double> = asmCompileToExpression(algebra)
@@ -27,4 +27,5 @@ private object AsmCompilerTestContext : CompilerTestContext {
 internal actual inline fun runCompilerTest(action: CompilerTestContext.() -> Unit) {
     contract { callsInPlace(action, InvocationKind.EXACTLY_ONCE) }
     action(AsmCompilerTestContext)
+    action(InterpreterTestContext)
 }

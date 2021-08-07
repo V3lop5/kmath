@@ -5,9 +5,7 @@
 
 package space.kscience.kmath.ast
 
-import space.kscience.kmath.expressions.Expression
-import space.kscience.kmath.expressions.MST
-import space.kscience.kmath.expressions.Symbol
+import space.kscience.kmath.expressions.*
 import space.kscience.kmath.operations.DoubleField
 import space.kscience.kmath.operations.IntRing
 
@@ -20,6 +18,15 @@ internal interface CompilerTestContext {
 
     fun MST.compile(algebra: DoubleField, vararg arguments: Pair<Symbol, Double>): Double =
         compile(algebra, mapOf(*arguments))
+}
+
+internal object InterpreterTestContext : CompilerTestContext{
+    override fun MST.compileToExpression(algebra: IntRing): Expression<Int> = toExpression(algebra)
+    override fun MST.compile(algebra: IntRing, arguments: Map<Symbol, Int>): Int = interpret(algebra,arguments)
+    override fun MST.compileToExpression(algebra: DoubleField): Expression<Double> = toExpression(algebra)
+
+    override fun MST.compile(algebra: DoubleField, arguments: Map<Symbol, Double>): Double =
+        interpret(algebra, arguments)
 }
 
 internal expect inline fun runCompilerTest(action: CompilerTestContext.() -> Unit)

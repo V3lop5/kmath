@@ -1,21 +1,16 @@
 plugins {
-    id("ru.mipt.npm.gradle.jvm")
-    kotlin("jupyter.api")
+    id(miptNpm.plugins.gradle.jvm.get().pluginId)
+    id(miptNpm.plugins.kotlin.jupyter.api.get().pluginId)
 }
 
 dependencies {
-    api(project(":kmath-ast"))
-    api(project(":kmath-complex"))
-    api(project(":kmath-for-real"))
+    api(miptNpm.kotlinx.html)
+    api(projects.kmathAst)
+    api(projects.kmathComplex)
+    api(projects.kmathForReal)
 }
 
-kscience{
-    useHtml()
-}
-
-readme {
-    maturity = ru.mipt.npm.gradle.Maturity.PROTOTYPE
-}
+readme.maturity = ru.mipt.npm.gradle.Maturity.PROTOTYPE
 
 kotlin.sourceSets.all {
     languageSettings.useExperimentalAnnotation("space.kscience.kmath.misc.UnstableKMathAPI")

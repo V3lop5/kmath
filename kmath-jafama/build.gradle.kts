@@ -1,17 +1,15 @@
 plugins {
-    id("ru.mipt.npm.gradle.jvm")
+    id(miptNpm.plugins.gradle.jvm.get().pluginId)
 }
 
 description = "Jafama integration module"
 
 dependencies {
-    api(project(":kmath-core"))
-    api("net.jafama:jafama:2.3.2")
+    api(libs.jafama)
+    api(projects.kmathCore)
 }
 
-repositories {
-    mavenCentral()
-}
+repositories.mavenCentral()
 
 readme {
     maturity = ru.mipt.npm.gradle.Maturity.PROTOTYPE

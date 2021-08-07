@@ -1,14 +1,13 @@
 plugins {
-    kotlin("multiplatform")
-    id("ru.mipt.npm.gradle.common")
-    id("ru.mipt.npm.gradle.native")
+    id(miptNpm.plugins.gradle.mpp.get().pluginId)
+    id(miptNpm.plugins.gradle.native.get().pluginId)
 }
 
 description = "Functions, integration and interpolation"
 
 kotlin.sourceSets.commonMain {
     dependencies {
-        api(project(":kmath-core"))
+        api(projects.kmathCore)
     }
 }
 

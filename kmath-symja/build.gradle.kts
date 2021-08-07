@@ -4,14 +4,13 @@
  */
 
 plugins {
-    kotlin("jvm")
-    id("ru.mipt.npm.gradle.common")
+    id(miptNpm.plugins.gradle.jvm.get().pluginId)
 }
 
 description = "Symja integration module"
 
 dependencies {
-    api("org.matheclipse:matheclipse-core:2.0.0-SNAPSHOT") {
+    api(libs.matheclipse.core) {
         // Incorrect transitive dependencies
         exclude("org.apfloat", "apfloat")
         exclude("org.hipparchus", "hipparchus-clustering")
@@ -33,8 +32,8 @@ dependencies {
     api("org.hipparchus:hipparchus-optim:1.8")
     api("org.hipparchus:hipparchus-stat:1.8")
 
-    api(project(":kmath-core"))
-    testImplementation("org.slf4j:slf4j-simple:1.7.31")
+    api(projects.kmathCore)
+    testImplementation(libs.slf4j.simple)
 }
 
 readme {

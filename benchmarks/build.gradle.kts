@@ -1,11 +1,18 @@
 @file:Suppress("UNUSED_VARIABLE")
 
-import space.kscience.kmath.benchmarks.addBenchmarkProperties
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.format.SignStyle
+import java.time.temporal.ChronoField
 
 plugins {
-    kotlin("multiplatform")
-    kotlin("plugin.allopen")
-    id("org.jetbrains.kotlinx.benchmark")
+    alias(miptNpm.plugins.kotlin.plugin.allopen)
+    alias(miptNpm.plugins.kotlinx.benchmark)
+    id(miptNpm.plugins.gradle.mpp.get().pluginId)
 }
 
 allOpen.annotation("org.openjdk.jmh.annotations.State")
@@ -28,35 +35,35 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":kmath-ast"))
-                implementation(project(":kmath-core"))
-                implementation(project(":kmath-coroutines"))
-                implementation(project(":kmath-complex"))
-                implementation(project(":kmath-stat"))
-                implementation(project(":kmath-dimensions"))
-                implementation(project(":kmath-for-real"))
-                implementation(project(":kmath-jafama"))
-                implementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:0.3.1")
+                implementation(projects.kmathAst)
+                implementation(projects.kmathCore)
+                implementation(projects.kmathCoroutines)
+                implementation(projects.kmathComplex)
+                implementation(projects.kmathStat)
+                implementation(projects.kmathDimensions)
+                implementation(projects.kmathForReal)
             }
         }
 
         val jvmMain by getting {
             dependencies {
-                implementation(project(":kmath-commons"))
-                implementation(project(":kmath-ejml"))
-                implementation(project(":kmath-nd4j"))
-                implementation(project(":kmath-kotlingrad"))
-                implementation(project(":kmath-viktor"))
-                implementation("org.nd4j:nd4j-native:1.0.0-M1")
-                //    uncomment if your system supports AVX2
-                //    val os = System.getProperty("os.name")
-                //
-                //    if (System.getProperty("os.arch") in arrayOf("x86_64", "amd64")) when {
-                //        os.startsWith("Windows") -> implementation("org.nd4j:nd4j-native:1.0.0-beta7:windows-x86_64-avx2")
-                //        os == "Linux" -> implementation("org.nd4j:nd4j-native:1.0.0-beta7:linux-x86_64-avx2")
-                //        os == "Mac OS X" -> implementation("org.nd4j:nd4j-native:1.0.0-beta7:macosx-x86_64-avx2")
-                //    } else
-                //    implementation("org.nd4j:nd4j-native-platform:1.0.0-beta7")
+                implementation(miptNpm.kotlinx.benchmark.runtime)
+                implementation(projects.kmathCommons)
+                implementation(projects.kmathJafama)
+                implementation(projects.kmathEjml)
+                implementation(projects.kmathNd4j)
+                implementation(projects.kmathKotlingrad)
+                implementation(projects.kmathViktor)
+                implementation(libs.nd4j.native)
+//                uncomment if your system supports AVX2
+//                val os = System.getProperty("os.name")
+//
+//                if (System.getProperty("os.arch") in arrayOf("x86_64", "amd64")) when {
+//                    os.startsWith("Windows") -> implementation("org.nd4j:nd4j-native:${libs.versions.nd4j.get()}:windows-x86_64-avx2")
+//                    os == "Linux" -> implementation("org.nd4j:nd4j-native:${libs.versions.nd4j.get()}:linux-x86_64-avx2")
+//                    os == "Mac OS X" -> implementation("org.nd4j:nd4j-native:${libs.versions.nd4j.get()}:macosx-x86_64-avx2")
+//                } else
+                implementation(libs.nd4j.native.platform)
             }
         }
     }
@@ -131,8 +138,98 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 }
 
 
-readme {
-    maturity = ru.mipt.npm.gradle.Maturity.EXPERIMENTAL
+readme.maturity = ru.mipt.npm.gradle.Maturity.EXPERIMENTAL
+
+private val isoDateTime: DateTimeFormatter = DateTimeFormatterBuilder().run {
+    parseCaseInsensitive()
+    appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
+    appendLiteral('-')
+    appendValue(ChronoField.MONTH_OF_YEAR, 2)
+    appendLiteral('-')
+    appendValue(ChronoField.DAY_OF_MONTH, 2)
+    appendLiteral('T')
+    appendValue(ChronoField.HOUR_OF_DAY, 2)
+    appendLiteral('.')
+    appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+    optionalStart()
+    appendLiteral('.')
+    appendValue(ChronoField.SECOND_OF_MINUTE, 2)
+    optionalStart()
+    appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
+    optionalStart()
+    appendOffsetId()
+    optionalStart()
+    appendLiteral('[')
+    parseCaseSensitive()
+    appendZoneRegionId()
+    appendLiteral(']')
+    toFormatter()
 }
 
-addBenchmarkProperties()
+fun noun(number: Number, singular: String, plural: String) = if (number.toLong() == 1L) singular else plural
+
+val benchmarksProject = project
+
+rootProject.subprojects {
+    readme {
+        benchmarksProject.benchmark.configurations.forEach { cfg ->
+            val capitalized = StringBuilder(cfg.name)
+            capitalized[0] = capitalized[0].toUpperCase()
+            property("benchmark${capitalized}") {
+                val launches = benchmarksProject.buildDir.resolve("reports/benchmarks/${cfg.name}")
+
+                val resDirectory = launches.listFiles()?.maxByOrNull {
+                    LocalDateTime.parse(it.name, isoDateTime).atZone(ZoneId.systemDefault()).toInstant()
+                }
+
+                if (resDirectory == null) {
+                    "> **Can't find appropriate benchmark data. Try generating readme files after running benchmarks**."
+                } else {
+                    val reports =
+                        Json.decodeFromString<List<space.kscience.kmath.benchmarks.JmhReport>>(
+                            resDirectory.resolve("jvm.json").readText()
+                        )
+
+                    buildString {
+                        appendLine("<details>")
+                        appendLine("<summary>")
+                        appendLine("Report for benchmark configuration <code>${cfg.name}</code>")
+                        appendLine("</summary>")
+                        appendLine()
+                        val first = reports.first()
+
+                        appendLine("* Run on ${first.vmName} (build ${first.vmVersion}) with Java process:")
+                        appendLine()
+                        appendLine("```")
+
+                        appendLine(
+                            "${first.jvm} ${
+                                first.jvmArgs.joinToString(" ")
+                            }"
+                        )
+
+                        appendLine("```")
+
+                        appendLine(
+                            "* JMH ${first.jmhVersion} was used in `${first.mode}` mode with ${first.warmupIterations} warmup ${
+                                noun(first.warmupIterations, "iteration", "iterations")
+                            } by ${first.warmupTime} and ${first.measurementIterations} measurement ${
+                                noun(first.measurementIterations, "iteration", "iterations")
+                            } by ${first.measurementTime}."
+                        )
+
+                        appendLine()
+                        appendLine("| Benchmark | Score |")
+                        appendLine("|:---------:|:-----:|")
+
+                        reports.forEach { report ->
+                            appendLine("|`${report.benchmark}`|${report.primaryMetric.score} &plusmn; ${report.primaryMetric.scoreError} ${report.primaryMetric.scoreUnit}|")
+                        }
+
+                        appendLine("</details>")
+                    }
+                }
+            }
+        }
+    }
+}

@@ -12,6 +12,7 @@ import space.kscience.kmath.operations.IntRing
 import space.kscience.kmath.operations.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 
 internal class TestCompilerVariables {
@@ -24,6 +25,6 @@ internal class TestCompilerVariables {
     @Test
     fun testUndefinedVariableFails() = runCompilerTest {
         val expr = MstRing { x }.compileToExpression(IntRing)
-        assertFailsWith<NoSuchElementException> { expr() }
+        assertFails { expr() }
     }
 }

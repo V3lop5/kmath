@@ -1,6 +1,5 @@
 plugins {
-    kotlin("jvm")
-    id("ru.mipt.npm.gradle.common")
+    id(miptNpm.plugins.gradle.jvm.get().pluginId)
 }
 
 description = "Kotlin∇ integration module"
@@ -8,8 +7,8 @@ description = "Kotlin∇ integration module"
 dependencies {
     api("com.github.breandan:kaliningraph:0.1.6")
     api("com.github.breandan:kotlingrad:0.4.5")
-    api(project(":kmath-core"))
-    testImplementation(project(":kmath-ast"))
+    api(projects.kmathCore)
+    testImplementation(projects.kmathAst)
 }
 
 readme {

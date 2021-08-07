@@ -1,16 +1,15 @@
 import space.kscience.kmath.ejml.codegen.ejmlCodegen
 
 plugins {
-    kotlin("jvm")
-    id("ru.mipt.npm.gradle.common")
+    id(miptNpm.plugins.gradle.jvm.get().pluginId)
 }
 
 dependencies {
-    api("org.ejml:ejml-ddense:0.41")
-    api("org.ejml:ejml-fdense:0.41")
-    api("org.ejml:ejml-dsparse:0.41")
-    api("org.ejml:ejml-fsparse:0.41")
-    api(project(":kmath-core"))
+    api(libs.ejml.ddense)
+    api(libs.ejml.fdense)
+    api(libs.ejml.dsparse)
+    api(libs.ejml.fsparse)
+    api(projects.kmathCore)
 }
 
 readme {

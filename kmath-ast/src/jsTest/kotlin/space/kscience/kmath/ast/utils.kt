@@ -39,4 +39,5 @@ internal actual inline fun runCompilerTest(action: CompilerTestContext.() -> Uni
     contract { callsInPlace(action, InvocationKind.AT_LEAST_ONCE) }
     action(WasmCompilerTestContext)
     action(ESTreeCompilerTestContext)
+    action(InterpreterTestContext)
 }

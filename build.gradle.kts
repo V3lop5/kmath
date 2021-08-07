@@ -1,8 +1,7 @@
 import java.net.URL
 
 plugins {
-    id("ru.mipt.npm.gradle.project")
-    kotlin("jupyter.api") apply false
+    alias(miptNpm.plugins.gradle.project)
 }
 
 allprojects {
@@ -30,7 +29,7 @@ subprojects {
             dependsOn(tasks["assemble"])
 
             dokkaSourceSets.all {
-                val readmeFile = this@subprojects.projectDir.resolve("README.md")
+                val readmeFile = this@subprojects.file("README.md")
                 if (readmeFile.exists()) includes.from(readmeFile)
                 val kotlinDirPath = "src/$name/kotlin"
                 val kotlinDir = file(kotlinDirPath)

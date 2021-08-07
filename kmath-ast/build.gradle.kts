@@ -1,6 +1,5 @@
 plugins {
-    kotlin("multiplatform")
-    id("ru.mipt.npm.gradle.common")
+    id(miptNpm.plugins.gradle.mpp.get().pluginId)
 }
 
 kotlin.js {
@@ -24,14 +23,14 @@ kotlin.sourceSets {
 
     commonMain {
         dependencies {
-            api("com.github.h0tk3y.betterParse:better-parse:0.4.2")
-            api(project(":kmath-core"))
+            api(libs.better.parse)
+            api(projects.kmathCore)
         }
     }
 
     commonTest {
         dependencies {
-            implementation(project(":kmath-complex"))
+            implementation(projects.kmathComplex)
         }
     }
 

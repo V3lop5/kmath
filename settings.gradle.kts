@@ -1,21 +1,27 @@
-pluginManagement {
-    repositories {
-        maven("https://repo.kotlin.link")
-        mavenCentral()
-        gradlePluginPortal()
-    }
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+enableFeaturePreview("VERSION_CATALOGS")
 
-    val kotlinVersion = "1.5.21"
-
-    plugins {
-        id("org.jetbrains.kotlinx.benchmark") version "0.3.1"
-        id("ru.mipt.npm.gradle.project") version "0.10.2"
-        kotlin("multiplatform") version kotlinVersion
-        kotlin("plugin.allopen") version kotlinVersion
-    }
+pluginManagement.repositories {
+    maven("https://repo.kotlin.link")
+    mavenCentral()
+    mavenLocal()
+    gradlePluginPortal()
 }
 
 rootProject.name = "kmath"
+
+dependencyResolutionManagement {
+    repositories {
+        maven("https://repo.kotlin.link")
+        mavenCentral()
+        mavenLocal()
+        gradlePluginPortal()
+    }
+
+    versionCatalogs.create("miptNpm") {
+        from("ru.mipt.npm:version-catalog:0.10.2")
+    }
+}
 
 include(
     ":kmath-memory",

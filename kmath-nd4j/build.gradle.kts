@@ -1,15 +1,14 @@
 plugins {
-    kotlin("jvm")
-    id("ru.mipt.npm.gradle.common")
+    id(miptNpm.plugins.gradle.jvm.get().pluginId)
 }
 
 description = "ND4J NDStructure implementation and according NDAlgebra classes"
 
 dependencies {
-    api(project(":kmath-tensors"))
-    api("org.nd4j:nd4j-api:1.0.0-M1")
-    testImplementation("org.nd4j:nd4j-native-platform:1.0.0-M1")
-    testImplementation("org.slf4j:slf4j-simple:1.7.31")
+    api(projects.kmathTensors)
+    api(libs.nd4j.api)
+    testImplementation(libs.nd4j.native.platform)
+    testImplementation(libs.slf4j.simple)
 }
 
 readme {

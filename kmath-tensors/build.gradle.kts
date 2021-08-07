@@ -1,7 +1,6 @@
 plugins {
-    kotlin("multiplatform")
-    id("ru.mipt.npm.gradle.common")
-    id("ru.mipt.npm.gradle.native")
+    id(miptNpm.plugins.gradle.mpp.get().pluginId)
+    id(miptNpm.plugins.gradle.native.get().pluginId)
 }
 
 kotlin.sourceSets {
@@ -11,8 +10,7 @@ kotlin.sourceSets {
 
     commonMain {
         dependencies {
-            api(project(":kmath-core"))
-            api(project(":kmath-stat"))
+            api(projects.kmathStat)
         }
     }
 }
